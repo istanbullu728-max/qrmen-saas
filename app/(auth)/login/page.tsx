@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
-import { simulateLogin } from "@/app/actions"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { auth } from "@/lib/firebase"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -22,22 +23,16 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            // Simulate delay for realism
-            await new Promise(resolve => setTimeout(resolve, 1500))
-
-            // In a real app we'd validate properly
-            // For now, allow any non-empty login
-            if (email && password) {
-                // Set cookie or session logic here via Server Action
-                await simulateLogin()
-
-                toast.success("Giriş başarılı! Yönlendiriliyorsunuz...")
-                router.push("/dashboard")
-            } else {
-                toast.error("Lütfen tüm alanları doldurun.")
-            }
-        } catch (error) {
-            toast.error("Giriş yapılamadı. Tekrar deneyin.")
+            await signInWithEmailAndPassword(auth, email, password)
+            toast.success("Giriş başarılı! Yönlendiriliyorsunuz...")
+            router.push("/dashboard")
+        } catch (error: any) {
+            console.error(error)
+            let message = "Giriş yapılamadı."
+            if (error.code === 'auth/invalid-credential') message = "Hatalı e-posta veya şifre."
+            if (error.code === 'auth/user-not-found') message = "Kullanıcı bulunamadı."
+            if (error.code === 'auth/wrong-password') message = "Hatalı şifre."
+            toast.error(message)
         } finally {
             setLoading(false)
         }

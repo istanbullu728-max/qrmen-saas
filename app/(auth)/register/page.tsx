@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
-import { simulateLogin } from "@/app/actions"
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
+import { auth } from "@/lib/firebase"
 
 export default function RegisterPage() {
     const router = useRouter()
@@ -26,13 +27,18 @@ export default function RegisterPage() {
         setLoading(true)
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500))
-            // Simulate account creation
-            await simulateLogin()
+            await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+            // Optional: Update profile with name
+            // await updateProfile(auth.currentUser!, { displayName: formData.name })
+
             setStep(2)
             toast.success("Hesap oluşturuldu!")
-        } catch (error) {
-            toast.error("Hata oluştu.")
+        } catch (error: any) {
+            console.error(error)
+            let message = "Hata oluştu."
+            if (error.code === 'auth/email-already-in-use') message = "Bu e-posta zaten kullanımda."
+            if (error.code === 'auth/weak-password') message = "Şifre çok zayıf."
+            toast.error(message)
         } finally {
             setLoading(false)
         }

@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { auth } from "@/lib/firebase"
+import Cookies from "js-cookie"
+// Mock auth import to maintain compatibility with other parts of the UI if needed
+const auth: any = {};
 
 export default function LoginPage() {
     const router = useRouter()
@@ -22,20 +23,17 @@ export default function LoginPage() {
         e.preventDefault()
         setLoading(true)
 
-        try {
-            await signInWithEmailAndPassword(auth, email, password)
+        // Demo Login Logic
+        if (email === "admin" && password === "12345") {
+            Cookies.set("auth_session", "demo-session-id", { expires: 7 })
             toast.success("Giriş başarılı! Yönlendiriliyorsunuz...")
             router.push("/dashboard")
-        } catch (error: any) {
-            console.error(error)
-            let message = "Giriş yapılamadı."
-            if (error.code === 'auth/invalid-credential') message = "Hatalı e-posta veya şifre."
-            if (error.code === 'auth/user-not-found') message = "Kullanıcı bulunamadı."
-            if (error.code === 'auth/wrong-password') message = "Hatalı şifre."
-            toast.error(message)
-        } finally {
             setLoading(false)
+            return
         }
+
+        toast.error("Hatalı kullanıcı adı veya şifre (Demo: admin / 12345)")
+        setLoading(false)
     }
 
     return (

@@ -4,6 +4,7 @@ import { db } from "@/lib/memory-db"
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { cache } from "react"
 
 export async function simulateLogin() {
     (await cookies()).set("auth_session", "valid_token", {
@@ -68,7 +69,7 @@ type RestaurantInfo = {
     reservationUrl?: string
 }
 
-export async function getMenuData() {
+export const getMenuData = cache(async function getMenuData() {
     // Ensure campaigns exist
     if (!(db as any).campaigns) (db as any).campaigns = []
 
@@ -83,7 +84,7 @@ export async function getMenuData() {
         },
         campaigns: (db as any).campaigns as any[] || []
     }
-}
+})
 
 export async function saveMenuData(data: { categories: Category[], restaurantInfo: RestaurantInfo }) {
     // Verify payload size
@@ -140,7 +141,7 @@ export async function incrementProductView(productId: string) {
     return { success: true }
 }
 
-export async function getDashboardStats() {
+export const getDashboardStats = cache(async function getDashboardStats() {
     let totalProducts = 0
     let totalViews = 0
     const allProducts: Product[] = []
@@ -178,13 +179,13 @@ export async function getDashboardStats() {
         topProducts,
         categoryStats
     }
-}
+})
 
 // --- Campaign Actions ---
 
-export async function getCampaigns() {
+export const getCampaigns = cache(async function getCampaigns() {
     return (db as any).campaigns as any[] || []
-}
+})
 
 export async function saveCampaign(campaign: any) {
     const campaigns = (db as any).campaigns as any[] || []

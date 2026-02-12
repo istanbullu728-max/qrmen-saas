@@ -174,9 +174,9 @@ export default function PublicMenuClientside({
 
     return (
         <div
-            className={cn(`min-h-screen w-full relative ${fontClass} bg-background text-foreground`, className)}
+            className={cn(`${fontClass} w-full`, className)}
             style={{
-                '--font-radius': '0.5rem',
+                '--font-radius': '1.5rem',
                 fontWeight: weight,
                 '--background': activeColors.bg,
                 '--foreground': activeColors.text,
@@ -195,23 +195,20 @@ export default function PublicMenuClientside({
                     className={`fixed inset-0 z-0 pointer-events-none ${textureClass}`}
                     style={{
                         opacity: opacity,
-                        // mixBlendMode removed to ensure visibility on all backgrounds. 
-                        // The SVG patterns are now transparent with dark/light noise.
-                        // We might want 'multiply' only for light themes, but 'normal' is safer if pattern is just noise.
                     }}
                 />
             )}
 
-            {/* Language Switcher - Floating */}
+            {/* Language Switcher - Floating (Modernized) */}
             <button
                 onClick={toggleLanguage}
-                className="fixed top-4 right-4 z-[60] bg-white/10 backdrop-blur-md border border-white/20 text-foreground px-3 py-1.5 rounded-full shadow-lg font-bold text-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                className="fixed top-20 right-4 z-[40] bg-white/40 backdrop-blur-xl border border-white/20 text-foreground px-3 py-1.5 rounded-full shadow-sm font-bold text-xs active-scale transition-all flex items-center gap-2"
             >
                 {language === 'tr' ? '🇹🇷 TR' : '🇬🇧 EN'}
             </button>
 
             {/* Content Wrapper */}
-            <div className="relative z-10 w-full min-h-screen flex flex-col">
+            <div className="relative z-10 w-full">
                 <SelectedTemplate
                     data={transformedData}
                     restaurantInfo={restaurantInfo}
@@ -221,24 +218,6 @@ export default function PublicMenuClientside({
                     tableId={tableId}
                 />
             </div>
-
-            {/* Decorative Elements */}
-            {(typography === 'luxury' || typography === 'artisan') && (
-                <>
-                    <div className="fixed top-0 left-0 w-full h-20 bg-gradient-to-b from-black/5 to-transparent pointer-events-none z-0" />
-                    <div className="fixed bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/5 to-transparent pointer-events-none z-0" />
-                </>
-            )}
-
-            {/* Call Waiter Button - Handled inside templates for new ones, or globally here */}
-            {!['lumiere', 'pastel', 'gold'].includes(restaurantInfo.template || '') && <WaiterCallButton tableId={tableId} />}
-
-            {/* Debug / Confirmation: Active Session Indicator */}
-            {tableId && (
-                <div className="fixed bottom-1 left-1 z-[40] bg-black/40 text-white/60 px-2 py-1 rounded text-[10px] pointer-events-none">
-                    Masa: {tableId}
-                </div>
-            )}
 
             <CampaignPopup campaigns={campaigns} />
 

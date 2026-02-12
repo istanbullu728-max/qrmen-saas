@@ -90,6 +90,20 @@ export default function LoginPage() {
                             </>
                         )}
                     </Button>
+
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full border-primary/20 hover:bg-primary/5"
+                        onClick={async () => {
+                            const { simulateLogin } = await import("@/app/actions")
+                            await simulateLogin()
+                            toast.success("Demo Girişi Başarılı!")
+                            router.push("/dashboard")
+                        }}
+                    >
+                        Demo Girişi (Şifresiz)
+                    </Button>
                 </form>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 text-center">

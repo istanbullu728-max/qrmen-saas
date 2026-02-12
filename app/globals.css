@@ -166,5 +166,40 @@
   body {
     @apply bg-background text-foreground;
     overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+  }
+
+  /* Allow selection in inputs and textareas */
+  input,
+  textarea {
+    user-select: text;
+  }
+
+  /* Native Scrolling Experience */
+  .scroll-container {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    scroll-behavior: smooth;
+  }
+
+  /* Interaction Feedbacks */
+  .active-scale {
+    transition: transform 0.1s ease-out;
+  }
+
+  .active-scale:active {
+    transform: scale(0.96);
+  }
+
+  /* Premium Card Standard */
+  .premium-card {
+    @apply rounded-[24px] bg-card border border-border/50 shadow-sm transition-all duration-200;
+  }
+
+  .premium-card:active {
+    @apply scale-[0.98] shadow-inner;
   }
 }

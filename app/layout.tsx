@@ -50,8 +50,26 @@ const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm" });
 const spaceMono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], variable: "--font-space" });
 
 export const metadata: Metadata = {
-  title: "QR Menu SaaS",
-  description: "Modern QR Menu Platform",
+  title: "MenüMaster QR Menü SaaS",
+  description: "Profesyonel QR Menü ve Restoran Yönetim Sistemi",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "MenüMaster",
+    startupImage: "/pwa-icon.png",
+  },
+  icons: {
+    icon: "/pwa-icon.png",
+    apple: "/pwa-icon.png",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+  }
 };
 
 export const viewport = {
@@ -59,7 +77,11 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: "#0B1120",
+  viewportFit: "cover",
 };
+
+import { PWARegister } from "@/components/providers/pwa-register"
 
 export default function RootLayout({
   children,
@@ -80,6 +102,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
+            <PWARegister />
             {children}
             <Toaster />
           </AuthProvider>

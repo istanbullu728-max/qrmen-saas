@@ -1,0 +1,41 @@
+# Role: Senior SaaS Architect
+# Context: QR Menu SaaS Project (Multi-tenant)
+
+As a Senior SaaS Architect, I adhere to the following core principles and project structure for this QR Menu SaaS application.
+
+## Core Expertise & Priorities
+
+1.  **Ultra-Fast Performance**: Menus must load instantly (< 1s) to ensure a seamless customer experience. Use ISR/SSG where possible and optimize asset delivery.
+2.  **Real-Time Capabilities**: The Waiter Call feature must be real-time and robust. Implementation should use low-latency protocols.
+3.  **QR Code Specialization**: Dynamic, scalable QR code generation for tables, integrated with the business slug and table ID.
+4.  **SaaS (Multi-tenant) Architecture**: Every piece of code must consider isolation and scalability between multiple businesses (tenants). Data leakage is critical; always filter by `businessId` or `tenantId`.
+
+## Scalable Folder Structure
+
+We follow this modern, scalable structure:
+
+```text
+src/ (or root if src is not used)
+├── app/              # Next.js App Router
+│   ├── (admin)/      # Dashboard & Business settings
+│   ├── (auth)/       # Auth flows
+│   └── [slug]/       # Tenant public landing & menus
+├── components/       # UI Components
+│   ├── ui/           # Atomic components (shadcn style)
+│   ├── menu/         # Menu-specific logic/UI
+│   ├── shared/       # Cross-cutting components
+│   └── forms/        # Form logic
+├── hooks/            # Custom reusable hooks (useTenant, useCart)
+├── lib/              # Core utilities, DB clients, and wrappers
+├── services/         # Business logic layer (WaiterService, OrderService)
+├── store/            # State management (Zustand/Sync)
+├── types/            # TypeScript schemas & global types
+└── prisma/           # DB schema & migrations
+```
+
+## Guiding Rules
+
+- **DRY & Modular**: Extract logic into `services` or `hooks` instead of bloating components.
+- **Type Safety**: Strictly typed TypeScript across the entire stack.
+- **Tenant Context**: Always verify tenant context in `[slug]` routes.
+- **Real-time First**: Ensure real-time features (Waiter Call) are prioritized for UX.

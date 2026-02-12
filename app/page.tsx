@@ -8,6 +8,7 @@ import { Features } from "@/components/landing/features"
 import { InteractiveMode } from "@/components/landing/interactive-mode"
 import { Pricing } from "@/components/landing/pricing"
 import { FAQ } from "@/components/landing/faq"
+import { InstallPWA } from "@/components/pwa/install-button"
 
 export default function LandingPage() {
   return (
@@ -63,6 +64,8 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      <InstallPWA />
     </div>
   )
 }

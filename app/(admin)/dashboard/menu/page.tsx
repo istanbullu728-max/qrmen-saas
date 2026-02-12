@@ -109,25 +109,36 @@ export default function MenuBuilderPage() {
 
     // Load Data
     useEffect(() => {
-        Promise.all([getMenuData(), getCampaigns()]).then(([menuData, campaignsData]) => {
-            // Menu Data
-            setCategories(menuData.categories)
-            const info = menuData.restaurantInfo as any
-            setRestaurantInfo({
-                name: info.name || "",
-                coverImage: info.coverImage || "",
-                logo: info.logo || "",
-                instagramUrl: info.instagramUrl || "",
-                googleMapsUrl: info.googleMapsUrl || ""
-            })
+        Promise.all([getMenuData(), getCampaigns()])
+            .then(([menuData, campaignsData]) => {
+                // Menu Data
+                if (menuData?.categories) {
+                    setCategories(menuData.categories)
+                }
 
-            // Campaigns Data
-            setCampaigns(campaignsData)
-            setLoading(false)
-        }).catch(err => {
-            console.error(err)
-            toast.error("Veriler yüklenirken hata oluştu.")
-        })
+                const info = menuData?.restaurantInfo as any
+                if (info) {
+                    setRestaurantInfo({
+                        name: info.name || "",
+                        coverImage: info.coverImage || "",
+                        logo: info.logo || "",
+                        instagramUrl: info.instagramUrl || "",
+                        googleMapsUrl: info.googleMapsUrl || ""
+                    })
+                }
+
+                // Campaigns Data
+                if (campaignsData) {
+                    setCampaigns(campaignsData)
+                }
+            })
+            .catch(err => {
+                console.error(err)
+                toast.error("Veriler yüklenirken bir hata oluştu.")
+            })
+            .finally(() => {
+                setLoading(false)
+            })
     }, [])
 
     // --- MENU LOGIC ---
@@ -416,14 +427,14 @@ export default function MenuBuilderPage() {
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="bg-slate-100 p-1 rounded-xl">
-                    <TabsTrigger value="menu" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2">
+                <TabsList className="bg-slate-100 p-1 rounded-xl w-full justify-start overflow-x-auto no-scrollbar">
+                    <TabsTrigger value="menu" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2 flex-shrink-0 px-4">
                         <List className="w-4 h-4" /> Menü İçeriği
                     </TabsTrigger>
-                    <TabsTrigger value="campaigns" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2">
+                    <TabsTrigger value="campaigns" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2 flex-shrink-0 px-4">
                         <Megaphone className="w-4 h-4" /> Kampanyalar
                     </TabsTrigger>
-                    <TabsTrigger value="settings" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2">
+                    <TabsTrigger value="settings" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2 flex-shrink-0 px-4">
                         <Settings className="w-4 h-4" /> Restoran Bilgileri
                     </TabsTrigger>
                 </TabsList>
@@ -431,22 +442,22 @@ export default function MenuBuilderPage() {
                 {/* --- TAB 1: MENU --- */}
                 <TabsContent value="menu" className="space-y-6 focus-visible:outline-none">
                     {/* Categories Header */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <h3 className="text-xl font-bold text-slate-800">
                             {isReorderMode ? "Kategori Sıralama" : "Kategoriler"}
                         </h3>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                             {categories.length > 1 && (
                                 <Button
                                     variant={isReorderMode ? "default" : "outline"}
                                     onClick={() => setIsReorderMode(!isReorderMode)}
-                                    className={cn("transition-all md:hidden", isReorderMode ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "")}
+                                    className={cn("transition-all", isReorderMode ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "")}
                                 >
                                     {isReorderMode ? <><Save className="mr-2 h-4 w-4" /> Tamam</> : <><ArrowUp className="mr-1 h-3 w-3" /><ArrowDown className="mr-2 h-3 w-3" /> Sırala</>}
                                 </Button>
                             )}
                             {!isReorderMode && (
-                                <Button onClick={openAddCategory} className="rounded-full">
+                                <Button onClick={openAddCategory} className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200">
                                     <Plus className="mr-2 h-4 w-4" /> Kategori Ekle
                                 </Button>
                             )}
@@ -457,22 +468,22 @@ export default function MenuBuilderPage() {
                     {isReorderMode && (
                         <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             {categories.map((category, index) => (
-                                <div key={category.id} className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-                                    <div className="flex items-center gap-3">
-                                        <div className="bg-slate-50 p-2 rounded-lg text-slate-400">
+                                <div key={category.id} className="flex items-center justify-between p-3 sm:p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                                        <div className="bg-slate-50 p-2 rounded-lg text-slate-400 flex-shrink-0">
                                             <GripVertical className="h-5 w-5" />
                                         </div>
-                                        <div>
-                                            <h4 className="font-semibold text-slate-900 text-lg">{category.name}</h4>
-                                            <p className="text-xs text-slate-500">{category.products.length} ürün</p>
+                                        <div className="truncate">
+                                            <h4 className="font-semibold text-slate-900 text-base sm:text-lg truncate">{category.name}</h4>
+                                            <p className="text-[10px] sm:text-xs text-slate-500">{category.products.length} ürün</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Button size="icon" variant="outline" disabled={index === 0} onClick={(e) => moveCategory(e, category.id, 'up')}>
-                                            <ArrowUp className="h-6 w-6" />
+                                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2">
+                                        <Button size="icon" variant="outline" className="h-9 w-9" disabled={index === 0} onClick={(e) => moveCategory(e, category.id, 'up')}>
+                                            <ArrowUp className="h-5 w-5" />
                                         </Button>
-                                        <Button size="icon" variant="outline" disabled={index === categories.length - 1} onClick={(e) => moveCategory(e, category.id, 'down')}>
-                                            <ArrowDown className="h-6 w-6" />
+                                        <Button size="icon" variant="outline" className="h-9 w-9" disabled={index === categories.length - 1} onClick={(e) => moveCategory(e, category.id, 'down')}>
+                                            <ArrowDown className="h-5 w-5" />
                                         </Button>
                                     </div>
                                 </div>
@@ -496,7 +507,7 @@ export default function MenuBuilderPage() {
                                         <SortableCategoryItem key={category.id} category={category}>
                                             <AccordionItem value={category.id} className="border-none bg-white rounded-lg shadow-sm">
                                                 <AccordionTrigger
-                                                    className="px-4 py-4 hover:no-underline hover:bg-slate-50/50 rounded-t-lg sticky top-[56px] z-10 bg-white border-b border-slate-100 shadow-sm"
+                                                    className="px-4 py-4 hover:no-underline hover:bg-slate-50/50 rounded-t-lg sticky top-[64px] md:top-[56px] z-10 bg-white border-b border-slate-100 shadow-sm"
                                                     triggerPrefix={<div onClick={e => e.stopPropagation()} className="pl-2"><DragHandleButton /></div>}
                                                     actions={
                                                         <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
@@ -652,7 +663,7 @@ export default function MenuBuilderPage() {
                                         <Label>Restoran İsmi</Label>
                                         <Input value={restaurantInfo.name} onChange={e => setRestaurantInfo({ ...restaurantInfo, name: e.target.value })} />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="grid gap-2">
                                             <Label>Instagram Linki</Label>
                                             <Input value={restaurantInfo.instagramUrl} onChange={e => setRestaurantInfo({ ...restaurantInfo, instagramUrl: e.target.value })} placeholder="https://instagram.com/..." />
@@ -769,15 +780,15 @@ function ProductList({ products, category, onEdit, onDelete, onToggleStatus }: a
                         <h5 className="font-semibold text-slate-900 truncate">{product.name}</h5>
                         <p className="text-sm text-slate-500 truncate">{product.price} ₺</p>
                     </div>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-600" onClick={() => onToggleStatus(category.id, product.id)}>
-                            {product.isActive ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                    <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-indigo-600 active:bg-indigo-50" onClick={() => onToggleStatus(category.id, product.id)}>
+                            {product.isActive ? <Check className="h-5 w-5" /> : <X className="h-5 w-5" />}
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-600" onClick={(e) => { e.stopPropagation(); onEdit(category.id, product); }}>
-                            <Edit className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-indigo-600 active:bg-indigo-50" onClick={(e) => { e.stopPropagation(); onEdit(category.id, product); }}>
+                            <Edit className="h-5 w-5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={() => onDelete(category.id, product.id)}>
-                            <Trash2 className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-red-600 active:bg-red-50" onClick={() => onDelete(category.id, product.id)}>
+                            <Trash2 className="h-5 w-5" />
                         </Button>
                     </div>
                 </div>

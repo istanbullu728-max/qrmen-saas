@@ -116,12 +116,12 @@ export function TemplateLumiere({ data, restaurantInfo, activeCategories, onProd
                 }
             `}</style>
 
-            {/* Scrollable Main Content Area */}
-            <main className="flex-1 overflow-y-auto no-scrollbar scroll-smooth">
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col pt-4">
                 {/* --- HERO SECTION --- */}
-                <div className="px-4 pt-6 pb-4">
+                <div className="px-4 pb-4">
                     <div
-                        className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden rounded-[2.5rem] min-h-[240px] shadow-lg relative"
+                        className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden rounded-[32px] min-h-[220px] shadow-sm relative active-scale"
                         style={{ backgroundImage: `url("${heroImage}")` }}
                     >
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
@@ -137,33 +137,29 @@ export function TemplateLumiere({ data, restaurantInfo, activeCategories, onProd
                 </div>
 
                 {/* --- STICKY NAV --- */}
-                <div className="sticky top-0 z-40 py-2 backdrop-blur-md dark:bg-opacity-90" style={{ backgroundColor: 'rgba(253, 252, 240, 0.95)' }}>
-                    <div className="flex overflow-x-auto no-scrollbar px-6 gap-3 pb-2 pt-1">
+                <div className="sticky top-0 z-40 py-4 backdrop-blur-xl border-b border-border/10">
+                    <div className="flex overflow-x-auto no-scrollbar px-4 gap-3">
                         {activeCategories.map((cat, index) => {
                             const isActive = activeTab === cat.id
 
                             const colorSchemes = [
-                                { bg: 'white', text: '#4A4A4A', border: 'transparent', activeBg: '#9370DB', activeText: 'white' },
-                                { bg: 'rgba(224, 242, 241, 0.5)', text: '#4DB6AC', border: '#E0F2F1', activeBg: '#4DB6AC', activeText: 'white' },
-                                { bg: 'rgba(230, 230, 250, 0.5)', text: '#9370DB', border: '#E6E6FA', activeBg: '#9370DB', activeText: 'white' },
-                                { bg: 'rgba(255, 218, 185, 0.5)', text: '#FBBF24', border: '#FFDAB9', activeBg: '#FBBF24', activeText: 'white' }
+                                { activeBg: 'var(--primary)', activeText: 'var(--primary-foreground)' },
+                                { activeBg: '#4DB6AC', activeText: 'white' },
+                                { activeBg: '#9370DB', activeText: 'white' },
+                                { activeBg: '#FBBF24', activeText: 'white' }
                             ]
 
                             const theme = colorSchemes[index % colorSchemes.length]
-                            const style = isActive
-                                ? { backgroundColor: theme.activeBg, color: theme.activeText, transform: 'scale(1.02)', boxShadow: `0 4px 12px ${theme.activeBg}4D` }
-                                : { backgroundColor: theme.bg, color: theme.text, borderColor: theme.border }
 
                             return (
                                 <button
                                     key={cat.id}
                                     onClick={() => scrollToCategory(cat.id)}
-                                    // Made smaller: px-4 py-2 instead of px-6 py-3
                                     className={cn(
-                                        "category-pill px-4 py-2 rounded-xl whitespace-nowrap text-[11px] font-extrabold flex items-center gap-2 border shadow-sm",
-                                        isActive ? "active" : ""
+                                        "px-5 py-2.5 rounded-2xl whitespace-nowrap text-xs font-bold transition-all active-scale shadow-sm border border-border/50",
+                                        isActive ? "shadow-md scale-105" : "bg-white/50 backdrop-blur-sm"
                                     )}
-                                    style={style}
+                                    style={isActive ? { backgroundColor: theme.activeBg, color: theme.activeText } : {}}
                                 >
                                     {cat.name}
                                 </button>
@@ -173,46 +169,46 @@ export function TemplateLumiere({ data, restaurantInfo, activeCategories, onProd
                 </div>
 
                 {/* --- PRODUCTS LIST --- */}
-                <div className="px-6 pt-2 pb-32">
+                <div className="px-4 pt-6 pb-20">
                     {activeCategories.map((cat) => (
-                        <div key={cat.id} id={`cat-${cat.id}`} className="mb-8 scroll-mt-28">
+                        <div key={cat.id} id={`cat-${cat.id}`} className="mb-10 scroll-mt-24">
                             {/* Category Header */}
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-2xl font-bold" style={{ color: COLORS.textMain }}>{cat.name}</h2>
-                                <div className="h-1 flex-1 mx-4 rounded-full opacity-50" style={{ backgroundColor: 'rgba(230, 230, 250, 0.6)' }}></div>
+                            <div className="flex items-center gap-4 mb-6">
+                                <h2 className="text-2xl font-bold tracking-tight" style={{ color: COLORS.textMain }}>{cat.name}</h2>
+                                <div className="h-px flex-1 bg-border/30"></div>
                             </div>
 
                             {/* Cards */}
-                            <div className="space-y-5">
+                            <div className="grid grid-cols-1 gap-5">
                                 {cat.products.filter((p: any) => p.isActive).map((product: any, idx: number) => {
-                                    const rot = idx % 2 === 0 ? '-1.5deg' : '1.5deg'
-
                                     return (
                                         <div
                                             key={product.id}
                                             onClick={() => onProductClick(product.id)}
-                                            className="bubbly-card relative flex flex-col bg-white rounded-[2rem] p-4 soft-shadow border cursor-pointer hover:shadow-md transition-shadow"
-                                            style={{ borderColor: 'rgba(230, 230, 250, 0.3)' }}
+                                            className="premium-card relative flex items-center p-3 cursor-pointer group"
                                         >
-                                            <div className="flex gap-4">
-                                                <div
-                                                    className="w-20 h-20 shrink-0 bg-cover bg-center rounded-2xl shadow-sm border-2 border-white"
-                                                    style={{
-                                                        backgroundImage: `url("${product.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=200&q=80'}")`,
-                                                        transform: `rotate(${rot})`
-                                                    }}
-                                                ></div>
-                                                <div className="flex-1 flex flex-col justify-center min-w-0">
-                                                    <h3 className="font-bold text-lg leading-tight truncate pr-2" style={{ color: COLORS.textMain }}>
+                                            <div
+                                                className="w-24 h-24 shrink-0 bg-cover bg-center rounded-2xl shadow-sm overflow-hidden"
+                                                style={{
+                                                    backgroundImage: `url("${product.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=200&q=80'}")`,
+                                                }}
+                                            />
+                                            <div className="flex-1 ml-4 min-w-0 pr-2">
+                                                <div className="flex justify-between items-start gap-2">
+                                                    <h3 className="font-bold text-base leading-tight text-foreground truncate">
                                                         {product.name}
                                                     </h3>
-                                                    <p className="text-slate-400 text-[11px] mt-1 font-semibold leading-relaxed line-clamp-2">
-                                                        {product.description}
-                                                    </p>
-                                                    <div className="mt-2">
-                                                        <span className="font-black text-lg" style={{ color: COLORS.softPurple }}>
-                                                            ₺{product.price.toFixed(2)}
-                                                        </span>
+                                                    <span className="font-bold text-primary whitespace-nowrap">
+                                                        ₺{product.price.toFixed(0)}
+                                                    </span>
+                                                </div>
+                                                <p className="text-muted-foreground text-xs mt-1.5 line-clamp-2 leading-relaxed">
+                                                    {product.description}
+                                                </p>
+
+                                                <div className="mt-2 flex items-center gap-2">
+                                                    <div className="h-5 px-2 rounded-full bg-primary/5 text-primary text-[10px] font-bold flex items-center">
+                                                        Popüler 🔥
                                                     </div>
                                                 </div>
                                             </div>
@@ -223,7 +219,7 @@ export function TemplateLumiere({ data, restaurantInfo, activeCategories, onProd
                         </div>
                     ))}
                 </div>
-            </main>
+            </div>
 
             {/* --- WAITER BUTTON (Footer) --- */}
             {/* Changed to Absolute so it stays within the relative parent (phone frame) */}

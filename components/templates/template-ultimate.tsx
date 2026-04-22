@@ -89,6 +89,18 @@ export function TemplateUltimate({ data, restaurantInfo, activeCategories, campa
         // Actually, the campaigns are passed in Props. Let me check the props again.
     }, [activeCategories])
 
+    const filteredCategories = useMemo(() => {
+        if (!searchQuery) return activeCategories
+
+        return activeCategories.map(cat => ({
+            ...cat,
+            products: cat.products.filter(p =>
+                p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                p.description?.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        })).filter(cat => cat.products.length > 0)
+    }, [activeCategories, searchQuery])
+
     // Waiter Modal State
     const [isWaiterOpen, setIsWaiterOpen] = useState(false)
     const [callLoading, setCallLoading] = useState(false)

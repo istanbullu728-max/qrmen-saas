@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, Plus, Star, MapPin, Instagram, Clock, ShoppingBag, MessageSquare, Bell, ChevronRight, Filter, Megaphone } from "lucide-react"
+import { Plus, Star, MapPin, Instagram, Clock, ShoppingBag, MessageSquare, Bell, ChevronRight, Filter, Megaphone } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { WaiterCallButton } from "../WaiterCallButton"
 
@@ -46,7 +46,6 @@ type TemplateProps = {
 }
 
 export function TemplateUltimate({ data, restaurantInfo, activeCategories, campaigns, onProductClick, tableId }: TemplateProps) {
-    const [searchQuery, setSearchQuery] = useState("")
     const [activeTab, setActiveTab] = useState(activeCategories[0]?.id)
     
     // Smooth scroll and tab sync
@@ -89,17 +88,7 @@ export function TemplateUltimate({ data, restaurantInfo, activeCategories, campa
         // Actually, the campaigns are passed in Props. Let me check the props again.
     }, [activeCategories])
 
-    const filteredCategories = useMemo(() => {
-        if (!searchQuery) return activeCategories
-
-        return activeCategories.map(cat => ({
-            ...cat,
-            products: cat.products.filter(p =>
-                p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                p.description?.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-        })).filter(cat => cat.products.length > 0)
-    }, [activeCategories, searchQuery])
+    const filteredCategories = activeCategories
 
     // Waiter Modal State
     const [isWaiterOpen, setIsWaiterOpen] = useState(false)
@@ -218,7 +207,7 @@ export function TemplateUltimate({ data, restaurantInfo, activeCategories, campa
 
             {/* Navigation & Search */}
             <div className="sticky top-0 z-[40] bg-[#F8F9FA]/80 backdrop-blur-xl border-b border-slate-200/50 mt-8">
-                <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
+                <div className="max-w-4xl mx-auto px-4 py-4">
                     {/* Category Tabs */}
                     <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-3">
                         {activeCategories.map((cat) => (
@@ -236,37 +225,11 @@ export function TemplateUltimate({ data, restaurantInfo, activeCategories, campa
                             </button>
                         ))}
                     </div>
-
-                    {/* Search Desktop */}
-                    <div className="hidden md:flex items-center bg-white rounded-2xl border border-slate-200 px-4 py-2.5 w-64 shadow-sm focus-within:ring-2 focus-within:ring-orange-500/20 transition-all">
-                        <Search className="w-4 h-4 text-slate-400 mr-2" />
-                        <input 
-                            type="text" 
-                            placeholder="Ürün ara..." 
-                            className="bg-transparent border-none focus:outline-none text-sm w-full font-medium"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
                 </div>
             </div>
 
             {/* Main Content */}
             <div className="max-w-4xl mx-auto px-4 pt-8">
-                {/* Search Mobile */}
-                <div className="md:hidden mb-8">
-                    <div className="flex items-center bg-white rounded-[24px] border border-slate-200 px-5 py-4 shadow-sm">
-                        <Search className="w-5 h-5 text-slate-400 mr-3" />
-                        <input 
-                            type="text" 
-                            placeholder="Ne yemek istersin?" 
-                            className="bg-transparent border-none focus:outline-none text-base w-full font-bold"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                </div>
-
                 {filteredCategories.length === 0 ? (
                     <div className="text-center py-20 px-8">
                         <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">

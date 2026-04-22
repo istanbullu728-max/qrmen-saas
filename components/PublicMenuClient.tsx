@@ -1,15 +1,7 @@
 "use client"
 import { cn } from "@/lib/utils"
 
-import { TemplateModern } from "./templates/template-modern"
-import { TemplateClassic } from "./templates/template-classic"
-import { TemplateMinimal } from "./templates/template-minimal"
-import { TemplateGrid } from "./templates/template-grid"
-import { TemplateLumiere } from "./templates/template-lumiere"
-import { TemplatePastel } from "./templates/template-pastel"
-import { TemplateNature } from "./templates/template-gold"
-import { TemplateVibrant } from "./templates/template-vibrant"
-import { TemplateElegant } from "./templates/template-elegant"
+import { TemplateUltimate } from "./templates/template-ultimate"
 import { AlertCircle } from "lucide-react"
 import { WaiterCallButton } from "./WaiterCallButton"
 import { CampaignPopup } from "./CampaignPopup"
@@ -88,21 +80,7 @@ export default function PublicMenuClientside({
         )
     }
 
-    const TemplateMap: any = {
-        'modern': TemplateModern,
-        'classic': TemplateClassic,
-        'minimal': TemplateMinimal,
-        'grid': TemplateGrid,
-        'vibrant': TemplateVibrant,
-        'elegant': TemplateElegant,
-
-        'lumiere': TemplateLumiere,
-        'pastel': TemplatePastel,
-        'gold': TemplateNature
-    }
-
-    // Force Lumiere as default for now per user request, or fallback to it
-    const SelectedTemplate = TemplateMap[restaurantInfo.template || 'lumiere'] || TemplateLumiere
+    const SelectedTemplate = TemplateUltimate
 
     // --- Language Logic ---
     const [language, setLanguage] = useState<'tr' | 'en'>('tr')
@@ -213,6 +191,7 @@ export default function PublicMenuClientside({
                     data={transformedData}
                     restaurantInfo={restaurantInfo}
                     activeCategories={transformedData}
+                    campaigns={campaigns}
                     onProductClick={handleProductClick}
                     language={language}
                     tableId={tableId}

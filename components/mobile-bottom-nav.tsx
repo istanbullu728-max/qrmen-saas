@@ -47,11 +47,6 @@ export function MobileBottomNav() {
             icon: QrCode,
         },
         {
-            href: "/dashboard/print-menu",
-            label: "Baskı Menüsü",
-            icon: Printer,
-        },
-        {
             href: "/dashboard/campaigns",
             label: "Kampanya Yönetimi",
             icon: Megaphone,

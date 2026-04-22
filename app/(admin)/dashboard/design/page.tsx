@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Check, Smartphone, Palette, ChevronRight, LayoutGrid, List, AlignLeft, MousePointerClick, Type, Sparkles, Eye, X } from "lucide-react"
+import { Check, Smartphone, Palette, ChevronRight, LayoutGrid, List, AlignLeft, MousePointerClick, Type, Sparkles, Eye, X, ExternalLink, Copy, Link2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { getMenuData, saveMenuData } from "@/app/actions"
@@ -88,9 +88,11 @@ export default function DesignPage() {
 
     const [loading, setLoading] = useState(true)
     const [menuData, setMenuData] = useState<any>(null)
-    const [showMobilePreview, setShowMobilePreview] = useState(false) // New state for custom overlay
+    const [showMobilePreview, setShowMobilePreview] = useState(false)
+    const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
+        setMounted(true)
         getMenuData().then(data => {
             setMenuData(data)
 
@@ -161,35 +163,14 @@ export default function DesignPage() {
             {/* Left: Controls */}
             <div className="flex-1 w-full md:h-full flex flex-col md:overflow-hidden">
                 <div className="mb-6 flex-shrink-0">
-                    <h2 className="text-2xl font-bold text-slate-900">Tasarım & Görünüm</h2>
-                    <p className="text-slate-500 text-sm">Menünüzün kimliğini oluşturun.</p>
+                    <h2 className="text-xl md:text-2xl font-bold text-slate-900">Tasarım & Görünüm</h2>
+                    <p className="text-slate-500 text-xs md:text-sm">Menünüzün kimliğini oluşturun.</p>
                 </div>
 
-                <Tabs defaultValue="template" className="flex-1 flex flex-col md:overflow-hidden">
-                    <TabsList className="w-full justify-start mb-4 bg-white p-1 border border-slate-200">
-                        <TabsTrigger value="template" className="flex-1">Şablon Seçimi</TabsTrigger>
-                        <TabsTrigger value="appearance" className="flex-1">Premium Görünüm</TabsTrigger>
+                <Tabs defaultValue="appearance" className="flex-1 flex flex-col md:overflow-hidden">
+                    <TabsList className="w-full justify-start mb-4 bg-white p-1 border border-slate-200 overflow-x-auto no-scrollbar">
+                        <TabsTrigger value="appearance" className="flex-1 text-xs sm:text-sm">Premium Görünüm</TabsTrigger>
                     </TabsList>
-
-                    {/* TEMPLATE TAB */}
-                    <TabsContent value="template" className="flex-1 md:overflow-y-auto pr-2 no-scrollbar md:pb-20">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:grid-cols-2 lg:grid-cols-2 overflow-x-auto snap-x flex-nowrap flex md:grid pb-4 pt-1 px-1 -mx-4 md:mx-0 md:pb-0 md:pt-0">
-                            {/* Mobile: Horizontal Scroll / Desktop: Grid */}
-                            {TEMPLATES.map(t => (
-                                <div key={t.id} className="min-w-[85vw] md:min-w-0 snap-center pl-4 first:pl-4 md:pl-0">
-                                    <TemplateCard
-                                        title={t.name}
-                                        active={designState.template === t.id}
-                                        onClick={() => updateField('template', t.id)}
-                                    >
-                                        <div className={cn("h-full flex flex-col p-4", t.color)}>
-                                            <div className="text-white/80 text-xs font-medium">{t.description}</div>
-                                        </div>
-                                    </TemplateCard>
-                                </div>
-                            ))}
-                        </div>
-                    </TabsContent>
 
                     {/* APPEARANCE TAB */}
                     <TabsContent value="appearance" className="flex-1 md:overflow-y-auto pr-2 no-scrollbar md:pb-20 space-y-8">
@@ -302,16 +283,57 @@ export default function DesignPage() {
             </div>
 
             {/* Right: Preview (Desktop) */}
-            <div className="hidden md:flex md:w-[420px] w-full flex-shrink-0 flex-col items-center justify-center p-4 bg-white/50 backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl h-full sticky top-4">
-                <div className="mb-4 text-center">
-                    <h3 className="font-bold text-slate-800 flex items-center justify-center gap-2">
-                        <Smartphone className="w-4 h-4" /> Canlı Önizleme
+            <div className="hidden md:flex md:w-[460px] w-full flex-shrink-0 flex-col items-center justify-start p-6 bg-white shadow-2xl h-full sticky top-4 overflow-y-auto no-scrollbar border-l border-slate-200">
+                <div className="w-full mb-4 text-center border-b border-slate-100 pb-2">
+                    <h3 className="font-bold text-slate-800 flex items-center justify-center gap-2 text-base">
+                        <Smartphone className="w-4 h-4 text-indigo-600" /> Canlı Önizleme
                     </h3>
                 </div>
-                {/* Scaled Container */}
-                <div className="transform scale-[0.85] origin-top">
+
+                {/* Ultra-Compact Horizontal Link Section */}
+                <div className="w-full mb-5 bg-slate-50 border border-slate-200 rounded-2xl p-2.5 shadow-sm group/link transition-all hover:border-indigo-200">
+                    <div className="flex items-center gap-3">
+                        <div className="shrink-0 w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                            <Link2 className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-0.5 px-0.5">
+                                <span className="text-[11px] font-bold text-slate-800 tracking-tight">Menü Bağlantınız</span>
+                                <a
+                                    href="/test-restaurant"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[10px] font-bold text-indigo-600 hover:text-indigo-701 bg-white px-2 py-0.5 rounded-full border border-indigo-100 transition-all hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap"
+                                >
+                                    Aç <ExternalLink className="w-2.5 h-2.5 inline ml-0.5" />
+                                </a>
+                            </div>
+                            <div className="flex items-center gap-1.5 p-1 bg-white rounded-lg border border-slate-100 shadow-inner group-hover/link:border-indigo-100 transition-colors">
+                                <p className="flex-1 text-[10px] font-medium text-slate-400 truncate px-1">
+                                    {mounted ? `${window.location.host}/test-restaurant` : '...'}
+                                </p>
+                                <button
+                                    onClick={() => {
+                                        if (!mounted) return;
+                                        const url = `${window.location.origin}/test-restaurant`;
+                                        navigator.clipboard.writeText(url);
+                                        toast.success("Kopyalandı!");
+                                    }}
+                                    className="p-1.5 bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-600 hover:text-white transition-all active:scale-90"
+                                    title="Kopyala"
+                                >
+                                    <Copy className="w-3 h-3" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Scaled Container - Balanced scale for visibility and fit */}
+                <div className="transform scale-[0.8] origin-top mb-10 shadow-2xl rounded-[45px] shrink-0 bg-black">
                     <PreviewFrame data={previewDataWithTemplate} />
                 </div>
+                <div className="h-40 w-full shrink-0" />
             </div>
 
             {/* Mobile Preview FAB & Custom Overlay */}

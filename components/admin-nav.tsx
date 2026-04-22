@@ -31,12 +31,6 @@ export function AdminNav({ onLinkClick }: { onLinkClick?: () => void }) {
             active: pathname.includes("/dashboard/design"),
         },
         {
-            href: "/dashboard/print-menu",
-            label: "Baskı Menü Tasarımı",
-            icon: Printer,
-            active: pathname.includes("/dashboard/print-menu"),
-        },
-        {
             href: "/dashboard/biolink",
             label: "Bio Link Sayfası",
             icon: Link2,

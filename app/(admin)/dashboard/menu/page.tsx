@@ -770,25 +770,25 @@ export default function MenuBuilderPage() {
 function ProductList({ products, category, onEdit, onDelete, onToggleStatus }: any) {
     if (!products || products.length === 0) return null
     return (
-        <div className="grid gap-3">
+        <div className="grid gap-2 sm:gap-3">
             {products.map((product: any) => (
-                <div key={product.id} className={cn("flex items-center gap-4 p-3 rounded-lg border bg-white transition-all group", product.isActive ? "border-slate-100 shadow-sm hover:border-indigo-100" : "border-slate-100 opacity-60 bg-slate-50")}>
-                    <div className="h-12 w-12 rounded-lg bg-slate-100 flex-shrink-0 overflow-hidden relative border border-slate-100">
+                <div key={product.id} className={cn("flex items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-xl border bg-white transition-all group", product.isActive ? "border-slate-100 shadow-sm active-scale" : "border-slate-100 opacity-60 bg-slate-50")}>
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-slate-100 flex-shrink-0 overflow-hidden relative border border-slate-100 italic">
                         {product.imageUrl ? <img src={product.imageUrl} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-slate-300"><ImageIcon className="h-5 w-5" /></div>}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h5 className="font-semibold text-slate-900 truncate">{product.name}</h5>
-                        <p className="text-sm text-slate-500 truncate">{product.price} ₺</p>
+                        <h5 className="font-bold text-slate-900 truncate text-sm sm:text-base leading-tight">{product.name}</h5>
+                        <p className="text-xs sm:text-sm text-slate-500 truncate font-medium">{product.price} ₺</p>
                     </div>
-                    <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-indigo-600 active:bg-indigo-50" onClick={() => onToggleStatus(category.id, product.id)}>
-                            {product.isActive ? <Check className="h-5 w-5" /> : <X className="h-5 w-5" />}
+                    <div className="flex items-center gap-0.5 sm:gap-1">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-indigo-600 active:bg-indigo-50 rounded-full" onClick={() => onToggleStatus(category.id, product.id)}>
+                            {product.isActive ? <Check className="h-4 w-4 sm:h-5 sm:w-5" /> : <X className="h-4 w-4 sm:h-5 sm:w-5" />}
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-indigo-600 active:bg-indigo-50" onClick={(e) => { e.stopPropagation(); onEdit(category.id, product); }}>
-                            <Edit className="h-5 w-5" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-indigo-600 active:bg-indigo-50 rounded-full" onClick={(e) => { e.stopPropagation(); onEdit(category.id, product); }}>
+                            <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-red-600 active:bg-red-50" onClick={() => onDelete(category.id, product.id)}>
-                            <Trash2 className="h-5 w-5" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-red-600 active:bg-red-50 rounded-full" onClick={() => onDelete(category.id, product.id)}>
+                            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                         </Button>
                     </div>
                 </div>

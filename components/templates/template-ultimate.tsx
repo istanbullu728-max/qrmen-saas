@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Plus, Star, MapPin, Instagram, Clock, ShoppingBag, MessageSquare, Bell, ChevronRight, Filter, Megaphone } from "lucide-react"
+import { Search, Plus, Star, MapPin, Instagram, Clock, ShoppingBag, MessageSquare, Bell, ChevronRight, Filter, Megaphone } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { WaiterCallButton } from "../WaiterCallButton"
 

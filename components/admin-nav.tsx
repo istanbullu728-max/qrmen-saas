@@ -22,7 +22,19 @@ export function AdminNav({ onLinkClick }: { onLinkClick?: () => void }) {
             href: "/dashboard/menu",
             label: "Dijital Menü İçeriği",
             icon: Menu,
-            active: pathname.includes("/dashboard/menu"),
+            active: pathname === "/dashboard/menu",
+        },
+        {
+            href: "/dashboard/campaigns",
+            label: "Kampanyalar",
+            icon: Megaphone,
+            active: pathname === "/dashboard/campaigns",
+        },
+        {
+            href: "/dashboard/restaurant-info",
+            label: "Restoran Bilgileri",
+            icon: Settings,
+            active: pathname === "/dashboard/restaurant-info",
         },
         {
             href: "/dashboard/design",
@@ -30,13 +42,6 @@ export function AdminNav({ onLinkClick }: { onLinkClick?: () => void }) {
             icon: Palette,
             active: pathname.includes("/dashboard/design"),
         },
-        {
-            href: "/dashboard/biolink",
-            label: "Bio Link Sayfası",
-            icon: Link2,
-            active: pathname.includes("/dashboard/biolink"),
-        },
-
         {
             href: "/dashboard/calls",
             label: "Garson Çağrı Sistemi",

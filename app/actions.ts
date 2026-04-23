@@ -305,18 +305,4 @@ export async function completeCall(id: string) {
     return { success: false }
 }
 
-// --- Bio Link Actions ---
-
-import { BioLink } from "@/lib/memory-db"
-
-export async function getBioLinks() {
-    return (db as any).bioLinks as BioLink[] || []
-}
-
-export async function saveBioLinks(links: BioLink[]) {
-    (db as any).bioLinks = links
-    revalidatePath("/dashboard/biolink")
-    revalidatePath("/[slug]/bio")
-    return { success: true }
-}
 

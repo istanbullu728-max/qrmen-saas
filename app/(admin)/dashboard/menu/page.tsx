@@ -409,281 +409,145 @@ export default function MenuBuilderPage() {
         setIsSearching(true)
         setSearchResults([])
         try {
-            const res = await fetch(`/api/search-images?q=${encodeURIComponent(query)}`)
-            const data = await res.json()
-            if (data.results) setSearchResults(data.results)
-            else toast.error("Görsel bulunamadı")
         } catch (error) { toast.error("Hata oluştu") }
         finally { setIsSearching(false) }
     }
 
-    if (loading) return <div className="p-8 text-center text-slate-500">Yükleniyor...</div>
+    if (loading) return <div className="p-8 text-center text-slate-500 font-medium">Yükleniyor...</div>
 
     return (
         <div className="flex-1 p-4 pt-4 md:p-8 md:pt-6 animate-in fade-in duration-500 space-y-6">
             <div className="flex flex-col gap-2">
-                <h2 className="text-3xl font-bold tracking-tight text-slate-900">Dijital Menü Yönetimi</h2>
-                <p className="text-slate-500">Menünüzü, kampanyalarınızı ve restoran bilgilerinizi tek yerden yönetin.</p>
+                <h2 className="text-3xl font-bold tracking-tight text-slate-900 font-sans">Dijital Menü İçeriği</h2>
+                <p className="text-slate-500">Kategorilerinizi ve ürünlerinizi yönetin.</p>
             </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="bg-slate-100 p-1 rounded-xl w-full justify-start overflow-x-auto no-scrollbar">
-                    <TabsTrigger value="menu" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2 flex-shrink-0 px-4">
-                        <List className="w-4 h-4" /> Menü İçeriği
-                    </TabsTrigger>
-                    <TabsTrigger value="campaigns" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2 flex-shrink-0 px-4">
-                        <Megaphone className="w-4 h-4" /> Kampanyalar
-                    </TabsTrigger>
-                    <TabsTrigger value="settings" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2 flex-shrink-0 px-4">
-                        <Settings className="w-4 h-4" /> Restoran Bilgileri
-                    </TabsTrigger>
-                </TabsList>
-
-                {/* --- TAB 1: MENU --- */}
-                <TabsContent value="menu" className="space-y-6 focus-visible:outline-none">
-                    {/* Categories Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <h3 className="text-xl font-bold text-slate-800">
-                            {isReorderMode ? "Kategori Sıralama" : "Kategoriler"}
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {categories.length > 1 && (
-                                <Button
-                                    variant={isReorderMode ? "default" : "outline"}
-                                    onClick={() => setIsReorderMode(!isReorderMode)}
-                                    className={cn("transition-all", isReorderMode ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "")}
-                                >
-                                    {isReorderMode ? <><Save className="mr-2 h-4 w-4" /> Tamam</> : <><ArrowUp className="mr-1 h-3 w-3" /><ArrowDown className="mr-2 h-3 w-3" /> Sırala</>}
-                                </Button>
-                            )}
-                            {!isReorderMode && (
-                                <Button onClick={openAddCategory} className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200">
-                                    <Plus className="mr-2 h-4 w-4" /> Kategori Ekle
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Reorder Mode List */}
-                    {isReorderMode && (
-                        <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            {categories.map((category, index) => (
-                                <div key={category.id} className="flex items-center justify-between p-3 sm:p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-                                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                                        <div className="bg-slate-50 p-2 rounded-lg text-slate-400 flex-shrink-0">
-                                            <GripVertical className="h-5 w-5" />
-                                        </div>
-                                        <div className="truncate">
-                                            <h4 className="font-semibold text-slate-900 text-base sm:text-lg truncate">{category.name}</h4>
-                                            <p className="text-[10px] sm:text-xs text-slate-500">{category.products.length} ürün</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2">
-                                        <Button size="icon" variant="outline" className="h-9 w-9" disabled={index === 0} onClick={(e) => moveCategory(e, category.id, 'up')}>
-                                            <ArrowUp className="h-5 w-5" />
-                                        </Button>
-                                        <Button size="icon" variant="outline" className="h-9 w-9" disabled={index === categories.length - 1} onClick={(e) => moveCategory(e, category.id, 'down')}>
-                                            <ArrowDown className="h-5 w-5" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Normal Mode List */}
-                    {!isReorderMode && (
-                        <DndContext
-                            sensors={sensors}
-                            collisionDetection={closestCenter}
-                            onDragStart={(event) => setActiveId(event.active.id as string)}
-                            onDragEnd={handleDragEnd}
-                            onDragCancel={() => setActiveId(null)}
-                            modifiers={[restrictToVerticalAxis]}
-                        >
-                            <Accordion type="multiple" className="w-full space-y-4">
-                                <SortableContext items={categories.map(c => c.id)} strategy={verticalListSortingStrategy}>
-                                    {categories.map((category) => (
-                                        <SortableCategoryItem key={category.id} category={category}>
-                                            <AccordionItem value={category.id} className="border-none bg-white rounded-lg shadow-sm">
-                                                <AccordionTrigger
-                                                    className="px-4 py-4 hover:no-underline hover:bg-slate-50/50 rounded-t-lg sticky top-[64px] md:top-[56px] z-10 bg-white border-b border-slate-100 shadow-sm"
-                                                    triggerPrefix={<div onClick={e => e.stopPropagation()} className="pl-2"><DragHandleButton /></div>}
-                                                    actions={
-                                                        <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                                                            <div className="hidden sm:flex gap-2 mr-2">
-                                                                <Button size="sm" variant="outline" className="h-8 text-xs" onClick={e => openAddProduct(category.id, e)}>
-                                                                    <Plus className="h-3 w-3 mr-1" /> Ürün Ekle
-                                                                </Button>
-                                                            </div>
-                                                            <DropdownMenu>
-                                                                <DropdownMenuTrigger asChild>
-                                                                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-slate-100/50 hover:bg-slate-200"><MoreVertical className="h-5 w-5" /></Button>
-                                                                </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align="end">
-                                                                    <DropdownMenuItem onClick={e => openEditCategory(category, e)}><Edit className="mr-2 h-4 w-4" /> Düzenle</DropdownMenuItem>
-                                                                    <DropdownMenuSeparator />
-                                                                    <DropdownMenuItem className="sm:hidden" onClick={e => openAddProduct(category.id, e)}><Plus className="mr-2 h-4 w-4" /> Ürün Ekle</DropdownMenuItem>
-                                                                    <DropdownMenuSeparator className="sm:hidden" />
-                                                                    <DropdownMenuItem className="text-destructive" onClick={e => deleteCategory(category.id, e)}><Trash2 className="mr-2 h-4 w-4" /> Sil</DropdownMenuItem>
-                                                                </DropdownMenuContent>
-                                                            </DropdownMenu>
-                                                        </div>
-                                                    }
-                                                >
-                                                    <div className="flex items-center gap-3 py-1 flex-1 min-w-0 pr-2">
-                                                        <span className="font-bold text-lg text-slate-900 truncate tracking-tight">{category.name}</span>
-                                                        <Badge variant="secondary" className="font-normal text-slate-500 flex-shrink-0 bg-slate-100">{category.products.length}</Badge>
-                                                    </div>
-                                                </AccordionTrigger>
-                                                <AccordionContent className="px-6 pb-6 pt-2 space-y-8">
-                                                    <div className="space-y-4">
-                                                        <ProductList products={category.products} category={category} onEdit={openEditProduct} onDelete={deleteProduct} onToggleStatus={toggleProductStatus} />
-                                                        {category.products.length === 0 && (
-                                                            <div className="text-center py-10 border-2 border-dashed border-slate-100 rounded-lg bg-slate-50/50">
-                                                                <p className="text-slate-500 mb-4">Henüz ürün eklenmemiş.</p>
-                                                                <Button onClick={e => openAddProduct(category.id, e)}>Ürün Ekle</Button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                        </SortableCategoryItem>
-                                    ))}
-                                </SortableContext>
-                            </Accordion>
-                            <DragOverlay>
-                                {activeId ? (
-                                    <div className="opacity-95 bg-white rounded-lg shadow-2xl border-2 border-indigo-500 p-4 flex items-center gap-3 scale-105 cursor-grabbing">
-                                        <Button variant="ghost" size="icon" className="cursor-grabbing h-10 w-10 text-indigo-600 bg-indigo-50 rounded-full"><GripVertical className="h-5 w-5" /></Button>
-                                        <div>
-                                            <span className="font-bold text-lg text-slate-900 block">{categories.find(c => c.id === activeId)?.name}</span>
-                                            <span className="text-xs text-slate-500">{categories.find(c => c.id === activeId)?.products.length} ürün</span>
-                                        </div>
-                                    </div>
-                                ) : null}
-                            </DragOverlay>
-                        </DndContext>
-                    )}
-                </TabsContent>
-
-                {/* --- TAB 2: CAMPAIGNS --- */}
-                <TabsContent value="campaigns" className="space-y-6 focus-visible:outline-none">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-xl font-bold text-slate-800">Aktif Kampanyalar</h3>
-                            <p className="text-sm text-slate-500">Müşterilerinize özel fırsatlar sunun.</p>
-                        </div>
-                        <Button onClick={() => openCampDialog()} className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/20">
-                            <Plus className="mr-2 h-4 w-4" /> Yeni Kampanya
-                        </Button>
-                    </div>
-
-                    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                        {campaigns.length === 0 && (
-                            <div className="col-span-full flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 text-slate-400">
-                                <Megaphone className="h-8 w-8 text-indigo-200 mb-4" />
-                                <h3 className="text-lg font-bold text-slate-900">Kampanya Bulunamadı</h3>
-                                <p className="text-sm text-slate-500 mt-2 mb-6">Satışlarınızı artırmak için ilk kampanyanızı ekleyin.</p>
-                                <Button onClick={() => openCampDialog()} variant="outline">+ Kampanya Oluştur</Button>
-                            </div>
+            <div className="space-y-6">
+                {/* Categories Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h3 className="text-xl font-bold text-slate-800">
+                        {isReorderMode ? "Kategori Sıralama" : "Kategoriler"}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                        {categories.length > 1 && (
+                            <Button
+                                variant={isReorderMode ? "default" : "outline"}
+                                onClick={() => setIsReorderMode(!isReorderMode)}
+                                className={cn("transition-all rounded-xl", isReorderMode ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "")}
+                            >
+                                {isReorderMode ? <><Save className="mr-2 h-4 w-4" /> Tamam</> : <><ArrowUp className="mr-1 h-3 w-3" /><ArrowDown className="mr-2 h-3 w-3" /> Sırala</>}
+                            </Button>
                         )}
-                        {campaigns.map((camp) => (
-                            <Card key={camp.id} className="relative overflow-hidden group border-none shadow-md bg-white hover:shadow-xl transition-all duration-300">
-                                <div className={`absolute top-0 right-0 p-3 z-10 rounded-bl-xl ${camp.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
-                                    {camp.isActive ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                                </div>
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-bl-[100px] -mr-4 -mt-4 transition-transform group-hover:scale-150 duration-700"></div>
+                        {!isReorderMode && (
+                            <Button onClick={openAddCategory} className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 h-10 px-5">
+                                <Plus className="mr-2 h-4 w-4" /> Kategori Ekle
+                            </Button>
+                        )}
+                    </div>
+                </div>
 
-                                <CardHeader className="pb-2 pt-6">
-                                    <CardTitle className="text-xl font-bold text-slate-800 pr-8 leading-tight">{camp.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm text-slate-500 mb-6 min-h-[40px] leading-relaxed line-clamp-2">{camp.description || "Açıklama yok."}</p>
-                                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                        <div className="text-2xl font-extrabold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">{camp.price ? `${camp.price}₺` : ""}</div>
-                                        <div className="flex gap-1">
-                                            <Switch checked={camp.isActive} onCheckedChange={() => toggleCamp(camp.id)} className="mr-2" />
-                                            <Button variant="ghost" size="icon" onClick={() => openCampDialog(camp)}><Ticket className="h-4 w-4 text-slate-400 hover:text-indigo-600" /></Button>
-                                            <Button variant="ghost" size="icon" onClick={() => deleteCamp(camp.id)}><Trash2 className="h-4 w-4 text-slate-400 hover:text-red-600" /></Button>
-                                        </div>
+                {/* Reorder Mode List */}
+                {isReorderMode && (
+                    <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        {categories.map((category, index) => (
+                            <div key={category.id} className="flex items-center justify-between p-3 sm:p-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                                    <div className="bg-slate-50 p-2 rounded-lg text-slate-400 flex-shrink-0">
+                                        <GripVertical className="h-5 w-5" />
                                     </div>
-                                </CardContent>
-                            </Card>
+                                    <div className="truncate">
+                                        <h4 className="font-bold text-slate-900 text-base sm:text-lg truncate">{category.name}</h4>
+                                        <p className="text-[10px] sm:text-xs text-slate-500 font-medium">{category.products.length} ürün</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2">
+                                    <Button size="icon" variant="outline" className="h-9 w-9 rounded-lg" disabled={index === 0} onClick={(e) => moveCategory(e, category.id, 'up')}>
+                                        <ArrowUp className="h-5 w-5" />
+                                    </Button>
+                                    <Button size="icon" variant="outline" className="h-9 w-9 rounded-lg" disabled={index === categories.length - 1} onClick={(e) => moveCategory(e, category.id, 'down')}>
+                                        <ArrowDown className="h-5 w-5" />
+                                    </Button>
+                                </div>
+                            </div>
                         ))}
                     </div>
-                </TabsContent>
+                )}
 
-                {/* --- TAB 3: SETTINGS --- */}
-                <TabsContent value="settings" className="space-y-6 focus-visible:outline-none">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Restoran Görünümü & Bilgileri</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-8">
-                            <div className="flex flex-col md:flex-row gap-8">
-                                {/* Images */}
-                                <div className="space-y-6">
-                                    <div className="flex flex-col gap-3">
-                                        <Label>Kapak Fotoğrafı</Label>
-                                        <div className={cn("w-64 h-40 rounded-xl overflow-hidden border-2 flex items-center justify-center relative bg-slate-50", restaurantInfo.coverImage ? "border-transparent shadow-md" : "border-dashed border-slate-200")}>
-                                            {restaurantInfo.coverImage ? (
-                                                <img src={restaurantInfo.coverImage} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="flex flex-col items-center gap-2 text-slate-400"><ImageIcon className="h-8 w-8" /><span className="text-xs">Kapak Yükle</span></div>
-                                            )}
-                                        </div>
-
-                                        {/* Action Buttons */}
-                                        <div className="flex items-center gap-2 w-64">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="flex-1 h-8 text-xs text-red-500 hover:text-red-600 hover:bg-red-50 border-slate-200"
-                                                onClick={() => setRestaurantInfo(prev => ({ ...prev, coverImage: "" }))}
+                {/* Normal Mode List */}
+                {!isReorderMode && (
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragStart={(event) => setActiveId(event.active.id as string)}
+                        onDragEnd={handleDragEnd}
+                        onDragCancel={() => setActiveId(null)}
+                        modifiers={[restrictToVerticalAxis]}
+                    >
+                        <Accordion type="multiple" className="w-full space-y-4">
+                            <SortableContext items={categories.map(c => c.id)} strategy={verticalListSortingStrategy}>
+                                {categories.map((category) => (
+                                    <SortableCategoryItem key={category.id} category={category}>
+                                        <AccordionItem value={category.id} className="border-none bg-white rounded-2xl shadow-sm overflow-hidden">
+                                            <AccordionTrigger
+                                                className="px-6 py-5 hover:no-underline hover:bg-slate-50/50 rounded-t-2xl transition-all"
+                                                triggerPrefix={<div onClick={e => e.stopPropagation()} className="pl-0"><DragHandleButton /></div>}
+                                                actions={
+                                                    <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                                                        <div className="hidden sm:flex gap-2">
+                                                            <Button size="sm" variant="ghost" className="h-9 text-xs font-bold text-indigo-600 hover:bg-indigo-50 rounded-lg px-4" onClick={e => openAddProduct(category.id, e)}>
+                                                                <Plus className="h-3.5 w-3.5 mr-1.5" /> Ürün Ekle
+                                                            </Button>
+                                                        </div>
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full hover:bg-slate-100 transition-colors"><MoreVertical className="h-5 w-5" /></Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end" className="rounded-xl border-slate-100 shadow-xl">
+                                                                <DropdownMenuItem onClick={e => openEditCategory(category, e)} className="rounded-lg"><Edit className="mr-2 h-4 w-4" /> Düzenle</DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem className="sm:hidden" onClick={e => openAddProduct(category.id, e)}><Plus className="mr-2 h-4 w-4" /> Ürün Ekle</DropdownMenuItem>
+                                                                <DropdownMenuSeparator className="sm:hidden" />
+                                                                <DropdownMenuItem className="text-red-500 hover:text-red-600 hover:bg-red-50 focus:text-red-600 focus:bg-red-50 rounded-lg" onClick={e => deleteCategory(category.id, e)}><Trash2 className="mr-2 h-4 w-4" /> Sil</DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
+                                                }
                                             >
-                                                <Trash2 className="h-3 w-3 mr-1.5" /> Sil
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="flex-1 h-8 text-xs border-slate-200"
-                                                onClick={() => bannerInputRef.current?.click()}
-                                            >
-                                                <Edit className="h-3 w-3 mr-1.5" /> Düzenle
-                                            </Button>
-                                        </div>
-                                        <input ref={bannerInputRef} type="file" className="hidden" accept="image/*" onChange={handleBannerSelect} />
+                                                <div className="flex items-center gap-3 py-1 flex-1 min-w-0 pr-2">
+                                                    <span className="font-extrabold text-lg text-slate-800 truncate tracking-tight">{category.name}</span>
+                                                    <Badge variant="secondary" className="font-bold text-slate-400 bg-slate-50 px-2 rounded-md">{category.products.length}</Badge>
+                                                </div>
+                                            </AccordionTrigger>
+                                            <AccordionContent className="px-6 pb-6 pt-2">
+                                                <div className="space-y-4">
+                                                    <ProductList products={category.products} category={category} onEdit={openEditProduct} onDelete={deleteProduct} onToggleStatus={toggleProductStatus} />
+                                                    {category.products.length === 0 && (
+                                                        <div className="text-center py-12 border-2 border-dashed border-slate-100 rounded-2xl bg-white">
+                                                            <p className="text-slate-400 font-medium mb-4">Henüz ürün eklenmemiş.</p>
+                                                            <Button onClick={e => openAddProduct(category.id, e)} className="rounded-xl border-slate-200" variant="outline">+ İlk Ürünü Ekleyin</Button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    </SortableCategoryItem>
+                                ))}
+                            </SortableContext>
+                        </Accordion>
+                        <DragOverlay>
+                            {activeId ? (
+                                <div className="opacity-95 bg-white rounded-2xl shadow-2xl border-2 border-indigo-500 p-5 flex items-center gap-4 scale-105 cursor-grabbing">
+                                    <div className="h-10 w-10 text-indigo-600 bg-indigo-50 rounded-full flex items-center justify-center"><GripVertical className="h-5 w-5" /></div>
+                                    <div>
+                                        <span className="font-extrabold text-lg text-slate-900 block">{categories.find(c => c.id === activeId)?.name}</span>
+                                        <span className="text-xs font-bold text-slate-400">{categories.find(c => c.id === activeId)?.products.length} ürün</span>
                                     </div>
                                 </div>
-
-                                {/* Form */}
-                                <div className="flex-1 space-y-4 max-w-xl">
-                                    <div className="grid gap-2">
-                                        <Label>Restoran İsmi</Label>
-                                        <Input value={restaurantInfo.name} onChange={e => setRestaurantInfo({ ...restaurantInfo, name: e.target.value })} />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="grid gap-2">
-                                            <Label>Instagram Linki</Label>
-                                            <Input value={restaurantInfo.instagramUrl} onChange={e => setRestaurantInfo({ ...restaurantInfo, instagramUrl: e.target.value })} placeholder="https://instagram.com/..." />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label>Google Maps Linki</Label>
-                                            <Input value={restaurantInfo.googleMapsUrl} onChange={e => setRestaurantInfo({ ...restaurantInfo, googleMapsUrl: e.target.value })} placeholder="https://maps.app.goo.gl/..." />
-                                        </div>
-                                    </div>
-                                    <div className="pt-4">
-                                        <Button onClick={handleSaveInfo} className="bg-slate-900"><Save className="mr-2 h-4 w-4" /> Ayarları Kaydet</Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-
-            {/* --- SHARED DIALOGS --- */}
+                            ) : null}
+                        </DragOverlay>
+                    </DndContext>
+                )}
+            </div>
 
             {/* Category Dialog */}
             <Dialog open={isCatDialogOpen} onOpenChange={setIsCatDialogOpen}>
@@ -744,22 +608,6 @@ export default function MenuBuilderPage() {
                         </div>
                     </div>
                     <DialogFooter><Button onClick={handleSaveProduct}>Kaydet</Button></DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            {/* Campaign Dialog */}
-            <Dialog open={isCampDialogOpen} onOpenChange={setIsCampDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{editingCampaign ? "Kampanyayı Düzenle" : "Yeni Kampanya"}</DialogTitle>
-                        <DialogDescription>Kampanya detaylarını giriniz.</DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                        <div className="space-y-2"><Label>Başlık</Label><Input value={campForm.title} onChange={e => setCampForm({ ...campForm, title: e.target.value })} placeholder="Örn: Kahve + Tatlı" /></div>
-                        <div className="space-y-2"><Label>Fiyat</Label><Input type="number" value={campForm.price} onChange={e => setCampForm({ ...campForm, price: e.target.value })} /></div>
-                        <div className="space-y-2"><Label>Açıklama</Label><Textarea value={campForm.description} onChange={e => setCampForm({ ...campForm, description: e.target.value })} /></div>
-                    </div>
-                    <DialogFooter><Button onClick={saveCamp}>Kaydet</Button></DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

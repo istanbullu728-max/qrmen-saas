@@ -52,6 +52,11 @@ export function MobileBottomNav() {
             icon: Megaphone,
         },
         {
+            href: "/dashboard/restaurant-info",
+            label: "Restoran Bilgileri",
+            icon: Settings,
+        },
+        {
             href: "/dashboard/profile",
             label: "Hesap Ayarları",
             icon: Settings,

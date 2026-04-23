@@ -63,19 +63,11 @@ export type Campaign = {
     isActive: boolean
 }
 
-export type BioLink = {
-    id: string
-    title: string
-    url: string
-    icon?: string
-    isActive: boolean
-    order: number
-}
+
 
 export const db = globalForDb.mockDb || {
     calls: [] as WaiterCall[],
     campaigns: [] as Campaign[],
-    bioLinks: [] as BioLink[],
     restaurantInfo: {
         name: "Restoran Adı",
         coverImage: "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1000&auto=format&fit=crop",
